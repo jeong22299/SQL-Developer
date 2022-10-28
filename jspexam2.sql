@@ -1,0 +1,23 @@
+--플래시백을 사용하여 10분 전으로 되돌림
+SELECT * 
+FROM PRODUCT AS OF TIMESTAMP(SYSTIMESTAMP - INTERVAL '10' MINUTE);
+
+-- 백업 테이블 만들기 
+-- INSERT INTO 백업할테이블
+-- SELECT * FROM 백업테이블명
+INSERT INTO PRODUCT
+SELECT * FROM PRODUCT_BAK2;
+COMMIT;
+
+--구글 카멜변환(https://heavenly-appear.tistory.com/270)
+SELECT COLUMN_NAME
+, DATA_TYPE
+, CASE WHEN DATA_TYPE='NUMBER' THEN 'private int ' || FN_GETCAMEL(COLUMN_NAME) || ';'
+WHEN DATA_TYPE IN('VARCHAR2','CHAR') THEN 'private String ' || FN_GETCAMEL(COLUMN_NAME) || ';'
+WHEN DATA_TYPE='DATE' THEN 'private Date ' || FN_GETCAMEL(COLUMN_NAME) || ';'
+ELSE 'private String ' || FN_GETCAMEL(COLUMN_NAME) || ';'
+END AS CAMEL_CASE
+, '' RESULTMAP
+FROM ALL_TAB_COLUMNS
+WHERE TABLE_NAME = 'ITEM';
+-- WHERE에 테이블명만 바꿔주면 됨!!
